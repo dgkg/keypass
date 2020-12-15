@@ -6,14 +6,28 @@ import (
 
 	swaggerFiles "github.com/swaggo/files"
 
+	_ "github.com/dgkg/keypass/docs"
 	"github.com/gin-gonic/gin"
 	"github.com/gofrs/uuid"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	_ "github.com/swaggo/gin-swagger/example/basic/docs"
 
 	"github.com/dgkg/keypass/model"
 )
 
+// @title Swagger Example API
+// @version 1.0
+// @description test bo
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@swagger.io
+
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host petstore.swagger.io
+// @BasePath /v2
 func main() {
 
 	UsersDB = make(map[string]*model.User)

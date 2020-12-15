@@ -88,8 +88,8 @@ type swaggerInfo struct {
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
 	Version:     "1.0",
-	Host:        "petstore.swagger.io",
-	BasePath:    "/v2",
+	Host:        "localhost:9090",
+	BasePath:    "/v1",
 	Schemes:     []string{},
 	Title:       "Swagger For Keypass API",
 	Description: "This is an API for creating hash in order to create keypasses.",

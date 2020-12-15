@@ -15,8 +15,8 @@
         },
         "version": "1.0"
     },
-    "host": "petstore.swagger.io",
-    "basePath": "/v2",
+    "host": "localhost:9090",
+    "basePath": "/v1",
     "paths": {
         "/users/{some_id}": {
             "get": {

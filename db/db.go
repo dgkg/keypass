@@ -1,6 +1,9 @@
 package db
 
-import "github.com/dgkg/keypass/model"
+import (
+  "github.com/dgkg/keypass/model"
+)
+
 
 type DB interface {
 	DBUser

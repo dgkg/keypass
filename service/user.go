@@ -25,10 +25,10 @@ func (su *ServiceUser) SetUserAction(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param uuid path string true "Some ID"
-// @Success 200 {string} string "ok"
+// @Success 200 {object} model.User "ok"
 // @Failure 400 {string} string "We need ID!!"
 // @Failure 404 {string} string "Can not find ID"
-// @Router /users/{some_id} [get]
+// @Router /users/{uuid} [get]
 func (su *ServiceUser) GetUser(ctx *gin.Context) {
 
 	id, err := uuid.FromString(ctx.Param("uuid"))
@@ -46,6 +46,13 @@ func (su *ServiceUser) GetUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, u)
 }
 
+// @Description create a User from the payload.
+// @Accept json
+// @Produce json
+// @Param user body model.User true "Add a User"
+// @Success 200 {object} model.User
+// @Failure 400 {string} string nil
+// @Router /users [post]
 func (su *ServiceUser) CreateUser(ctx *gin.Context) {
 	var u model.User
 	err := ctx.BindJSON(&u)

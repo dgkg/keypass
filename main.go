@@ -34,10 +34,10 @@ func main() {
 
 	// However, this one will match /user/john/ and also /user/john/send
 	// If no other routers match /user/john, it will redirect to /user/john/
-	router.GET("/users/:name/*action", func(c *gin.Context) {
-		name := c.Param("name")
+	router.GET("/users/:uuid/*action", func(c *gin.Context) {
+		id := c.Param("uuid")
 		action := c.Param("action")
-		message := name + " is " + action
+		message := id + " is " + action
 		c.String(http.StatusOK, message)
 	})
 

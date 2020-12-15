@@ -1,12 +1,16 @@
 package main
 
 import (
+	"github.com/gin-gonic/gin"
+	"github.com/gofrs/uuid"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"log"
 	"net/http"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	"github.com/gofrs/uuid"
+	swaggerFiles "github.com/swaggo/files"
+
+	_ "github.com/swaggo/gin-swagger/example/basic/docs"
 )
 
 func main() {
@@ -59,6 +63,9 @@ func main() {
 		UsersDB[u2.ID] = u2
 		ctx.JSON(http.StatusOK, u2)
 	})
+
+	url := ginSwagger.URL("http://localhost:9090/swagger/doc.json") // The url pointing to API definition
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
 	router.Run(":9090")
 }

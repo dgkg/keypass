@@ -10,6 +10,8 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
+	"github.com/dgkg/keypass/db"
+	"github.com/dgkg/keypass/db/moke"
 	_ "github.com/dgkg/keypass/docs"
 	"github.com/dgkg/keypass/model"
 )
@@ -30,22 +32,27 @@ import (
 // @BasePath /v2
 func main() {
 
-	DB.users = make(map[string]*model.User)
-
 	r := gin.Default()
+
+	var su ServiceUser
+	su.db = moke.New()
 
 	url := ginSwagger.URL("http://localhost:9090/swagger/doc.json") // The url pointing to API definition
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
-	r.GET("/users/:uuid", GetUser)
-	r.GET("/users/:uuid/*action", SetUserAction)
-	r.PATCH("/users/:uuid", UpdateUser)
-	r.PUT("/users/:uuid", UpdateUser)
-	r.POST("/users", CreateUser)
+	r.GET("/users/:uuid", su.GetUser)
+	r.GET("/users/:uuid/*action", su.SetUserAction)
+	r.PATCH("/users/:uuid", su.UpdateUser)
+	r.PUT("/users/:uuid", su.UpdateUser)
+	r.POST("/users", su.CreateUser)
 
 	r.Run(":9090")
 }
 
-func SetUserAction(c *gin.Context) {
+type ServiceUser struct {
+	db db.DB
+}
+
+func (su *ServiceUser) SetUserAction(c *gin.Context) {
 	id := c.Param("uuid")
 	action := c.Param("action")
 	message := id + " is " + action
@@ -60,7 +67,7 @@ func SetUserAction(c *gin.Context) {
 // @Failure 400 {string} string "We need ID!!"
 // @Failure 404 {string} string "Can not find ID"
 // @Router /users/{some_id} [get]
-func GetUser(ctx *gin.Context) {
+func (su *ServiceUser) GetUser(ctx *gin.Context) {
 
 	id, err := uuid.FromString(ctx.Param("uuid"))
 	if err != nil {
@@ -69,14 +76,15 @@ func GetUser(ctx *gin.Context) {
 		return
 	}
 
-	u, ok := DB.users[id.String()]
-	if !ok {
+	u, err := su.db.GetUser(id.String())
+	if err != nil {
+		log.Println(err)
 		ctx.JSON(http.StatusNotFound, nil)
 	}
 	ctx.JSON(http.StatusOK, u)
 }
 
-func CreateUser(ctx *gin.Context) {
+func (su *ServiceUser) CreateUser(ctx *gin.Context) {
 	var u model.User
 	err := ctx.BindJSON(&u)
 	if err != nil {
@@ -84,17 +92,13 @@ func CreateUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
 	}
-	u2, err := model.NewUser(u.FirstName, u.LastName, u.Email, u.Password)
-	if err != nil {
-		log.Println("/users create user", err.Error())
-		ctx.JSON(http.StatusInternalServerError, nil)
-		return
-	}
-	DB.users[u2.ID] = u2
+
+	u2, _ := su.db.CreateUser(&u)
+
 	ctx.JSON(http.StatusOK, u2)
 }
 
-func UpdateUser(ctx *gin.Context) {
+func (su *ServiceUser) UpdateUser(ctx *gin.Context) {
 	id, err := uuid.FromString(ctx.Param("uuid"))
 	if err != nil {
 		log.Println("/users bad request", err.Error())
@@ -110,17 +114,8 @@ func UpdateUser(ctx *gin.Context) {
 		return
 	}
 
-	u, ok := DB.users[id.String()]
-	if !ok {
-		ctx.JSON(http.StatusNotFound, nil)
-		return
-	}
-
-	u.FirstName = payload.toString("first_name")
-	u.LastName = payload.toString("last_name")
-	u.Email = payload.toString("email")
-
-	if len(payload.errs) != 0 {
+	u, err := su.db.UpdateUser(id.String(), payload.data)
+	if err != nil {
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
 	}
@@ -146,10 +141,3 @@ func (p *Payloadpatch) toString(fieldName string) string {
 	}
 	return newval
 }
-
-type mokeDB struct {
-	users map[string]*model.User
-}
-
-// DB is a moke for DB.
-var DB mokeDB

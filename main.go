@@ -50,8 +50,14 @@ func main() {
 			ctx.JSON(http.StatusBadRequest, nil)
 			return
 		}
-		UsersDB[u.ID] = &u
-		ctx.JSON(http.StatusOK, u)
+		u2, err := NewUser(u.FirstName, u.LastName, u.Email, u.Password)
+		if err != nil {
+			log.Println("/users create user", err.Error())
+			ctx.JSON(http.StatusInternalServerError, nil)
+			return
+		}
+		UsersDB[u2.ID] = u2
+		ctx.JSON(http.StatusOK, u2)
 	})
 
 	router.Run(":9090")
@@ -62,12 +68,12 @@ var UsersDB map[string]*User
 
 // User represent a single customer.
 type User struct {
-	ID           string
-	FirstName    string
-	LastName     string
-	Email        string
-	Password     string
-	CreationDate time.Time
+	ID           string    `json:"uuid"`
+	FirstName    string    `json:"first_name"`
+	LastName     string    `json:"last_name"`
+	Email        string    `json:"email"`
+	Password     string    `json:"password"`
+	CreationDate time.Time `json:"creation_date"`
 }
 
 func NewUser(fn, ln, email, pass string) (*User, error) {
@@ -84,3 +90,5 @@ func NewUser(fn, ln, email, pass string) (*User, error) {
 		CreationDate: time.Now(),
 	}, nil
 }
+
+var payload = []byte(`{"FirstName":"Bob"}`)

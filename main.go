@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
 	"github.com/gofrs/uuid"
 )
 
@@ -13,54 +13,51 @@ func main() {
 
 	UsersDB = make(map[string]*User)
 
-	router := gin.Default()
+	router := fiber.New()
 
 	// This handler will match /user/john but will not match /user/ or /user
-	router.GET("/users/:uuid", func(ctx *gin.Context) {
+	router.Get("/users/:uuid", func(ctx *fiber.Ctx) error {
 
-		id, err := uuid.FromString(ctx.Param("uuid"))
+		id, err := uuid.FromString(ctx.Params("uuid"))
 		if err != nil {
 			log.Println("/users bad request", err.Error())
-			ctx.JSON(http.StatusBadRequest, nil)
-			return
+			return ctx.Status(http.StatusBadRequest).JSON(nil)
 		}
 
 		u, ok := UsersDB[id.String()]
 		if !ok {
-			ctx.JSON(http.StatusNotFound, nil)
+			return ctx.Status(http.StatusNotFound).JSON(nil)
 		}
-		ctx.JSON(http.StatusOK, u)
+		return ctx.Status(http.StatusOK).JSON(u)
 	})
 
 	// However, this one will match /user/john/ and also /user/john/send
 	// If no other routers match /user/john, it will redirect to /user/john/
-	router.GET("/users/:uuid/*action", func(c *gin.Context) {
-		id := c.Param("uuid")
-		action := c.Param("action")
+	router.Get("/users/:uuid/*action", func(c *fiber.Ctx) error {
+		id := c.Params("uuid")
+		action := c.Params("action")
 		message := id + " is " + action
-		c.String(http.StatusOK, message)
+		return c.Status(http.StatusOK).SendString(message)
 	})
 
 	// For each matched request Context will hold the route definition
-	router.POST("/users", func(ctx *gin.Context) {
+	router.Post("/users", func(ctx *fiber.Ctx) error {
 		var u User
-		err := ctx.BindJSON(&u)
+		err := ctx.BodyParser(&u)
 		if err != nil {
 			log.Println("/users bad request", err.Error())
-			ctx.JSON(http.StatusBadRequest, nil)
-			return
+			return ctx.Status(http.StatusBadRequest).JSON(nil)
 		}
 		u2, err := NewUser(u.FirstName, u.LastName, u.Email, u.Password)
 		if err != nil {
 			log.Println("/users create user", err.Error())
-			ctx.JSON(http.StatusInternalServerError, nil)
-			return
+			return ctx.Status(http.StatusInternalServerError).JSON(nil)
 		}
 		UsersDB[u2.ID] = u2
-		ctx.JSON(http.StatusOK, u2)
+		return ctx.Status(http.StatusOK).JSON(u2)
 	})
 
-	router.Run(":9090")
+	router.Listen(":9090")
 }
 
 // UsersDB is a moke for DB.

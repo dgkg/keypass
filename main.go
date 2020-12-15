@@ -40,7 +40,6 @@ func main() {
 	r.GET("/users/:uuid/*action", SetUserAction)
 	r.PATCH("/users/:uuid", UpdateUser)
 	r.PUT("/users/:uuid", UpdateUser)
-
 	r.POST("/users", CreateUser)
 
 	r.Run(":9090")

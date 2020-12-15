@@ -90,5 +90,3 @@ func NewUser(fn, ln, email, pass string) (*User, error) {
 		CreationDate: time.Now(),
 	}, nil
 }
-
-var payload = []byte(`{"FirstName":"Bob"}`)

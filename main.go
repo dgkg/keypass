@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"log"
 	"net/http"
 
@@ -105,39 +104,20 @@ func (su *ServiceUser) UpdateUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
 	}
-	var payload Payloadpatch
-	payload.data = make(map[string]interface{})
-	err = ctx.BindJSON(&payload.data)
+	var payload model.Payloadpatch
+	payload.Data = make(map[string]interface{})
+	err = ctx.BindJSON(&payload.Data)
 	if err != nil {
 		log.Println("/users bad request", err.Error())
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
 	}
 
-	u, err := su.db.UpdateUser(id.String(), payload.data)
+	u, err := su.db.UpdateUser(id.String(), &payload)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
 	}
 
 	ctx.JSON(http.StatusOK, u)
-}
-
-type Payloadpatch struct {
-	data map[string]interface{}
-	errs []error
-}
-
-func (p *Payloadpatch) toString(fieldName string) string {
-	val, ok := p.data[fieldName]
-	if !ok {
-		p.errs = append(p.errs, errors.New("no values for:"+fieldName))
-		return ""
-	}
-	newval, ok := val.(string)
-	if !ok {
-		p.errs = append(p.errs, errors.New("cast not possible into string for:"+fieldName))
-		return ""
-	}
-	return newval
 }

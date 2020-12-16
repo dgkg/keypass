@@ -37,10 +37,12 @@ func main() {
 
 	v1 := r.Group("/v1")
 	v1.GET("/users/:uuid", su.GetUser)
+	v1.GET("/users", su.GetAllUser)
 	v1.GET("/users/:uuid/*action", su.SetUserAction)
 	v1.PATCH("/users/:uuid", su.UpdateUser)
 	v1.PUT("/users/:uuid", su.UpdateUser)
 	v1.POST("/users", su.CreateUser)
+	v1.DELETE("/users/:uuid", su.DeleteUser)
 
 	r.Run(":9090")
 }

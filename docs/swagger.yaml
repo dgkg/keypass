@@ -30,6 +30,49 @@ info:
   version: "1.0"
 paths:
   /users:
+    get:
+      consumes:
+      - application/json
+      description: get a User by ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            items:
+              $ref: '#/definitions/model.User'
+            type: array
+        "400":
+          description: We need ID!!
+          schema:
+            type: string
+        "404":
+          description: Can not find ID
+          schema:
+            type: string
+    patch:
+      consumes:
+      - application/json
+      description: update a User from the payload.
+      parameters:
+      - description: Add a User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
     post:
       consumes:
       - application/json
@@ -53,6 +96,31 @@ paths:
           schema:
             type: string
   /users/{uuid}:
+    delete:
+      consumes:
+      - application/json
+      description: delete a User by ID
+      parameters:
+      - description: Some ID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: We need ID!!
+          schema:
+            type: string
+        "404":
+          description: Can not find ID
+          schema:
+            type: string
     get:
       consumes:
       - application/json

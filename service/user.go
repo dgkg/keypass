@@ -74,6 +74,13 @@ func (su *ServiceUser) CreateUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, u2)
 }
 
+// @Description update a User from the payload.
+// @Accept json
+// @Produce json
+// @Param user body model.User true "Add a User"
+// @Success 200 {object} model.User
+// @Failure 400 {string} string nil
+// @Router /users [patch] [put]
 func (su *ServiceUser) UpdateUser(ctx *gin.Context) {
 	id, err := uuid.FromString(ctx.Param("uuid"))
 	if err != nil {
@@ -97,4 +104,46 @@ func (su *ServiceUser) UpdateUser(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, u)
+}
+
+// DeleteUser is deleing a user form it's uuid.
+// @Description delete a User by ID
+// @Accept json
+// @Produce json
+// @Param uuid path string true "Some ID"
+// @Success 200 {object} model.User "ok"
+// @Failure 400 {string} string "We need ID!!"
+// @Failure 404 {string} string "Can not find ID"
+// @Router /users/{uuid} [delete]
+func (su *ServiceUser) DeleteUser(ctx *gin.Context) {
+
+	id, err := uuid.FromString(ctx.Param("uuid"))
+	if err != nil {
+		log.Println("/users bad request", err.Error())
+		ctx.JSON(http.StatusBadRequest, nil)
+		return
+	}
+
+	u, err := su.DB.DeleteUser(id.String())
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, nil)
+		return
+	}
+	ctx.JSON(http.StatusOK, u)
+}
+
+// @Description get a User by ID
+// @Accept json
+// @Produce json
+// @Success 200 {object} []model.User "ok"
+// @Failure 400 {string} string "We need ID!!"
+// @Failure 404 {string} string "Can not find ID"
+// @Router /users [get]
+func (su *ServiceUser) GetAllUser(ctx *gin.Context) {
+	us, err := su.DB.GetAllUser()
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, nil)
+		return
+	}
+	ctx.JSON(http.StatusOK, us)
 }

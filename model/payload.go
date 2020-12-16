@@ -7,16 +7,17 @@ type Payloadpatch struct {
 	Errs []error
 }
 
-func (p *Payloadpatch) ToString(fieldName string) string {
+func (p *Payloadpatch) ToString(fieldReceiver *string, fieldName string) {
+	if fieldReceiver == nil {
+		return
+	}
 	val, ok := p.Data[fieldName]
 	if !ok {
-		p.Errs = append(p.Errs, errors.New("no values for:"+fieldName))
-		return ""
+		return
 	}
 	newval, ok := val.(string)
 	if !ok {
 		p.Errs = append(p.Errs, errors.New("cast not possible into string for:"+fieldName))
-		return ""
 	}
-	return newval
+	*fieldReceiver = newval
 }

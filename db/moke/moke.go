@@ -44,9 +44,9 @@ func (db *mokeDB) UpdateUser(uuid string, payload *model.Payloadpatch) (*model.U
 		return nil, err
 	}
 
-	u.FirstName = payload.ToString("first_name")
-	u.LastName = payload.ToString("last_name")
-	u.Email = payload.ToString("email")
+	payload.ToString(&u.FirstName, "first_name")
+	payload.ToString(&u.LastName, "last_name")
+	payload.ToString(&u.Email, "email")
 
 	return u, nil
 }

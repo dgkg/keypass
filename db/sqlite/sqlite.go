@@ -51,7 +51,7 @@ func (db *SQLite) DeleteUser(uuid string) (*model.User, error) {
 
 func (db *SQLite) UpdateUser(uuid string, payload *model.Payloadpatch) (*model.User, error) {
 
-	db.db.Model(&model.User{}).Where("id = ?", uuid).Updates(payload)
+	db.db.Model(&model.User{}).Where("id = ?", uuid).Updates(payload.Data)
 	return db.GetUser(uuid)
 }
 

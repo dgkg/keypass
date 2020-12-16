@@ -1,5 +1,27 @@
 basePath: /v1
 definitions:
+  model.Card:
+    properties:
+      activated:
+        description: Activated the cart should be activated before usage.
+        type: boolean
+      creationDate:
+        type: string
+      id:
+        type: string
+      pic:
+        description: Pic is the uri of the image source link.
+        type: string
+      url:
+        type: string
+      userAccountLogin:
+        type: string
+      userAccountPassword:
+        type: string
+      userID:
+        description: UserID refer to the User.ID
+        type: string
+    type: object
   model.User:
     properties:
       creation_date:
@@ -29,6 +51,123 @@ info:
   title: Swagger For Keypass API
   version: "1.0"
 paths:
+  /cards:
+    get:
+      consumes:
+      - application/json
+      description: get a Card by ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            items:
+              $ref: '#/definitions/model.Card'
+            type: array
+        "400":
+          description: We need ID!!
+          schema:
+            type: string
+        "404":
+          description: Can not find ID
+          schema:
+            type: string
+    patch:
+      consumes:
+      - application/json
+      description: update a Card from the payload.
+      parameters:
+      - description: Add a Card
+        in: body
+        name: Card
+        required: true
+        schema:
+          $ref: '#/definitions/model.Card'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Card'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+    post:
+      consumes:
+      - application/json
+      description: create a Card from the payload.
+      parameters:
+      - description: Add a Card
+        in: body
+        name: Card
+        required: true
+        schema:
+          $ref: '#/definitions/model.Card'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Card'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+  /cards/{uuid}:
+    delete:
+      consumes:
+      - application/json
+      description: delete a Card by ID
+      parameters:
+      - description: Some ID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/model.Card'
+        "400":
+          description: We need ID!!
+          schema:
+            type: string
+        "404":
+          description: Can not find ID
+          schema:
+            type: string
+    get:
+      consumes:
+      - application/json
+      description: get a Card by ID
+      parameters:
+      - description: Some ID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/model.Card'
+        "400":
+          description: We need ID!!
+          schema:
+            type: string
+        "404":
+          description: Can not find ID
+          schema:
+            type: string
   /users:
     get:
       consumes:

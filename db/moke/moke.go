@@ -12,6 +12,7 @@ var _ db.DB = &mokeDB{}
 
 type mokeDB struct {
 	users map[string]*model.User
+	cards map[string]*model.Card
 }
 
 func New() *mokeDB {
@@ -53,6 +54,39 @@ func (db *mokeDB) UpdateUser(uuid string, payload *model.Payloadpatch) (*model.U
 func (db *mokeDB) GetAllUser() ([]*model.User, error) {
 	us := make([]*model.User, len(db.users))
 	for _, u := range db.users {
+		us = append(us, u)
+	}
+	return us, nil
+}
+
+func (db *mokeDB) CreateCard(c *model.Card) (*model.Card, error) {
+	c.ID = uuid.NewV4().String()
+	c.CreationDate = time.Now()
+	db.cards[c.ID] = c
+	return c, nil
+}
+
+func (db *mokeDB) GetCard(uuid string) (*model.Card, error) {
+	return db.cards[uuid], nil
+}
+
+func (db *mokeDB) DeleteCard(uuid string) (*model.Card, error) {
+	u, err := db.GetCard(uuid)
+	if err != nil {
+		return nil, err
+	}
+	delete(db.cards, uuid)
+	return u, nil
+}
+
+func (db *mokeDB) UpdateCard(uuid string, payload *model.Payloadpatch) (*model.Card, error) {
+	// TODO implement this function.
+	return nil, nil
+}
+
+func (db *mokeDB) GetAllCard() ([]*model.Card, error) {
+	us := make([]*model.Card, len(db.cards))
+	for _, u := range db.cards {
 		us = append(us, u)
 	}
 	return us, nil

@@ -2,7 +2,7 @@ doc:
 	swag init
 
 up:
-	doc
+	make doc
 	go build
 	./keypass
 

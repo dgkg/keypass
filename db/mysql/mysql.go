@@ -4,9 +4,12 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 
+	"github.com/dgkg/keypass/db"
 	"github.com/dgkg/keypass/db/sqlite"
 	"github.com/dgkg/keypass/model"
 )
+
+var _ db.DB = &DBMysql{}
 
 type DBMysql = sqlite.SQLite
 
@@ -20,6 +23,8 @@ func New() *DBMysql {
 	}
 
 	db.AutoMigrate(&model.User{})
+	db.AutoMigrate(&model.Card{})
+
 	conn.SetDB(db)
 
 	return &conn

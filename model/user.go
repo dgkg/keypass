@@ -1,10 +1,12 @@
 package model
 
 import (
+	"crypto/sha256"
 	"encoding/json"
+	"errors"
+	"fmt"
+	"strings"
 	"time"
-
-	"github.com/gofrs/uuid"
 )
 
 // User represent a single customer used for JSON comm.
@@ -15,6 +17,51 @@ type User struct {
 	Email        string    `json:"email"`
 	Password     string    `json:"password"`
 	CreationDate time.Time `json:"creation_date"`
+}
+
+func (u *User) ValidatePayload() []error {
+	var errList []error
+	err := validateSize(3, 200, u.FirstName)
+	if err != nil {
+		errList = append(errList, err)
+	}
+
+	err = validateSize(3, 200, u.LastName)
+	if err != nil {
+		errList = append(errList, err)
+	}
+
+	err = validateSize(3, 320, u.Email)
+	if err != nil {
+		errList = append(errList, err)
+	}
+	if !strings.Contains(u.Email, "@") {
+		errList = append(errList, errors.New("no @ found for the email"))
+	}
+
+	emailVals := strings.Split(u.Email, "@")
+	if len(emailVals) != 2 {
+		errList = append(errList, errors.New("email not valid"))
+	}
+	err = validateSize(1, 64, emailVals[1])
+	if err != nil {
+		errList = append(errList, err)
+	}
+	validateSize(3, 200, u.Password)
+	if err != nil {
+		errList = append(errList, err)
+	}
+	return errList
+}
+
+func validateSize(min, max int, value string) error {
+	if len(value) < min || len(value) > max {
+		if len(value) > max {
+			return fmt.Errorf("got a value too long: %v", value[:max])
+		}
+		return fmt.Errorf("got a value too short: %v" + value)
+	}
+	return nil
 }
 
 func (u *User) UnmarshalJSON(b []byte) error {
@@ -31,9 +78,15 @@ func (u *User) UnmarshalJSON(b []byte) error {
 	u.FirstName = aux.FirstName
 	u.LastName = aux.LastName
 	u.Email = aux.Email
-	u.Password = aux.Password
+	u.Password = Hash(aux.Password)
 
 	return nil
+}
+
+func Hash(clear string) (hashed string) {
+	h := sha256.New()
+	h.Write([]byte(clear))
+	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
 func (u User) MarshalJSON() ([]byte, error) {
@@ -53,17 +106,11 @@ func (u User) MarshalJSON() ([]byte, error) {
 	return json.Marshal(aux)
 }
 
-func NewUser(fn, ln, email, pass string) (*User, error) {
-	id, err := uuid.NewV4()
-	if err != nil {
-		return nil, err
-	}
+func NewUser(fn, ln, email, pass string) *User {
 	return &User{
-		ID:           id.String(),
-		FirstName:    fn,
-		LastName:     ln,
-		Email:        email,
-		Password:     pass,
-		CreationDate: time.Now(),
-	}, nil
+		FirstName: fn,
+		LastName:  ln,
+		Email:     email,
+		Password:  pass,
+	}
 }

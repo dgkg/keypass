@@ -62,6 +62,13 @@ func (su *ServiceUser) CreateUser(ctx *gin.Context) {
 		return
 	}
 
+	errs := u.ValidatePayload()
+	if len(errs) != 0 {
+		log.Println("/users bad request", errs)
+		ctx.JSON(http.StatusBadRequest, errs)
+		return
+	}
+
 	u2, _ := su.DB.CreateUser(&u)
 
 	ctx.JSON(http.StatusOK, u2)

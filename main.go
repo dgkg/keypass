@@ -5,7 +5,7 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	"github.com/dgkg/keypass/db/sqlite"
+	"github.com/dgkg/keypass/db/mysql"
 	_ "github.com/dgkg/keypass/docs"
 	"github.com/dgkg/keypass/service"
 )
@@ -30,7 +30,7 @@ func main() {
 
 	var su service.ServiceUser
 	// su.DB = moke.New()
-	su.DB = sqlite.New("local.db")
+	su.DB = mysql.New()
 
 	url := ginSwagger.URL("http://localhost:9090/swagger/doc.json") // The url pointing to API definition
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))

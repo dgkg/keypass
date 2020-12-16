@@ -30,6 +30,10 @@ func New(dbName string) *SQLite {
 	}
 }
 
+func (db *SQLite) SetDB(dbgorm *gorm.DB) {
+	db.db = dbgorm
+}
+
 func (db *SQLite) CreateUser(u *model.User) (*model.User, error) {
 	u.ID = uuid.NewV4().String()
 	u.CreationDate = time.Now()

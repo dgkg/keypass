@@ -9,8 +9,8 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"github.com/dgkg/keypass/db"
-	"github.com/dgkg/keypass/db/moke"
 	"github.com/dgkg/keypass/db/mysql"
+	"github.com/dgkg/keypass/db/sqlite"
 	_ "github.com/dgkg/keypass/docs"
 	"github.com/dgkg/keypass/service"
 )
@@ -49,6 +49,10 @@ func init() {
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
 // @BasePath /v1
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func main() {
 
 	r := gin.Default()
@@ -60,7 +64,7 @@ func main() {
 
 	var db db.DB
 	if conf.Mode == "local" {
-		db = moke.New()
+		db = sqlite.New("local.db")
 	} else {
 		db = mysql.New(conf.MySQL)
 	}

@@ -79,6 +79,8 @@ paths:
           description: Can not find ID
           schema:
             type: string
+      security:
+      - BearerAuth: []
     patch:
       consumes:
       - application/json
@@ -101,6 +103,8 @@ paths:
           description: Bad Request
           schema:
             type: string
+      security:
+      - BearerAuth: []
     post:
       consumes:
       - application/json
@@ -123,6 +127,8 @@ paths:
           description: Bad Request
           schema:
             type: string
+      security:
+      - BearerAuth: []
   /cards/{uuid}:
     delete:
       consumes:
@@ -149,6 +155,8 @@ paths:
           description: Can not find ID
           schema:
             type: string
+      security:
+      - BearerAuth: []
     get:
       consumes:
       - application/json
@@ -174,6 +182,8 @@ paths:
           description: Can not find ID
           schema:
             type: string
+      security:
+      - BearerAuth: []
   /login:
     post:
       consumes:
@@ -314,4 +324,9 @@ paths:
           description: Can not find ID
           schema:
             type: string
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

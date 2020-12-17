@@ -1,10 +1,14 @@
 package middleware
 
 import (
+	"errors"
 	"fmt"
+	"net/http"
+	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
 )
 
 var mySigningKey = []byte("AllYourBase")
@@ -26,7 +30,8 @@ func NewJWT(uuid, userName string) (string, error) {
 		UserUUID: uuid,
 		UserName: userName,
 	}
-	claims.ExpiresAt = time.Now().Add(time.Hour * 2).Unix()
+	// claims.ExpiresAt = time.Now().Add(time.Hour * 2).Unix()
+	claims.ExpiresAt = time.Now().Unix()
 	claims.Issuer = "keypass"
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -50,4 +55,24 @@ func ValidateJWT(tokenValue string) (*JWTClaims, error) {
 		return &claims, nil
 	}
 	return nil, err
+}
+
+func NewJWTMiddleware() func(ctx *gin.Context) {
+	return func(ctx *gin.Context) {
+		value := ctx.Request.Header.Get("Authorization")
+		if len(value) < 190 {
+			ctx.AbortWithError(http.StatusUnauthorized, errors.New("JWT no value"))
+			return
+		}
+		valueToken := strings.Split(value, " ")
+		if len(valueToken) != 2 {
+			ctx.AbortWithError(http.StatusUnauthorized, errors.New("JWT parsing"))
+			return
+		}
+		_, err := ValidateJWT(valueToken[1])
+		if err != nil {
+			ctx.AbortWithError(http.StatusUnauthorized, err)
+			return
+		}
+	}
 }

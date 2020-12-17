@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/dgkg/keypass/db"
+	"github.com/dgkg/keypass/middleware"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,10 +20,11 @@ func New(r *gin.Engine, db db.DB) {
 
 	var sc ServiceCard
 	sc.DB = db
-	v1.GET("/cards/:uuid", sc.GetCard)
-	v1.GET("/cards", sc.GetAllCard)
-	v1.PATCH("/cards/:uuid", sc.UpdateCard)
-	v1.PUT("/cards/:uuid", sc.UpdateCard)
-	v1.POST("/cards", sc.CreateCard)
-	v1.DELETE("/cards/:uuid", sc.DeleteCard)
+	card := v1.Group("/cards").Use(middleware.NewJWTMiddleware())
+	card.GET("/:uuid", sc.GetCard)
+	card.GET("", sc.GetAllCard)
+	card.PATCH("/:uuid", sc.UpdateCard)
+	card.PUT("/:uuid", sc.UpdateCard)
+	card.POST("", sc.CreateCard)
+	card.DELETE("/:uuid", sc.DeleteCard)
 }

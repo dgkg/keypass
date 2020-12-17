@@ -19,6 +19,11 @@
     "paths": {
         "/cards": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "get a Card by ID",
                 "consumes": [
                     "application/json"
@@ -51,6 +56,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "create a Card from the payload.",
                 "consumes": [
                     "application/json"
@@ -85,6 +95,11 @@
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "update a Card from the payload.",
                 "consumes": [
                     "application/json"
@@ -121,6 +136,11 @@
         },
         "/cards/{uuid}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "get a Card by ID",
                 "consumes": [
                     "application/json"
@@ -159,6 +179,11 @@
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "delete a Card by ID",
                 "consumes": [
                     "application/json"
@@ -480,6 +505,13 @@
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

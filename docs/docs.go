@@ -35,6 +35,11 @@ var doc = `{
     "paths": {
         "/cards": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "get a Card by ID",
                 "consumes": [
                     "application/json"
@@ -67,6 +72,11 @@ var doc = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "create a Card from the payload.",
                 "consumes": [
                     "application/json"
@@ -101,6 +111,11 @@ var doc = `{
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "update a Card from the payload.",
                 "consumes": [
                     "application/json"
@@ -137,6 +152,11 @@ var doc = `{
         },
         "/cards/{uuid}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "get a Card by ID",
                 "consumes": [
                     "application/json"
@@ -175,6 +195,11 @@ var doc = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "delete a Card by ID",
                 "consumes": [
                     "application/json"
@@ -496,6 +521,13 @@ var doc = `{
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

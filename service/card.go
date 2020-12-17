@@ -19,6 +19,7 @@ type ServiceCard struct {
 // @Description get a Card by ID
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param uuid path string true "Some ID"
 // @Success 200 {object} model.Card "ok"
 // @Failure 400 {string} string "We need ID!!"
@@ -44,6 +45,7 @@ func (su *ServiceCard) GetCard(ctx *gin.Context) {
 // @Description create a Card from the payload.
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param Card body model.Card true "Add a Card"
 // @Success 200 {object} model.Card
 // @Failure 400 {string} string nil
@@ -72,6 +74,7 @@ func (su *ServiceCard) CreateCard(ctx *gin.Context) {
 // @Description update a Card from the payload.
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param Card body model.Card true "Add a Card"
 // @Success 200 {object} model.Card
 // @Failure 400 {string} string nil
@@ -105,6 +108,7 @@ func (su *ServiceCard) UpdateCard(ctx *gin.Context) {
 // @Description delete a Card by ID
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param uuid path string true "Some ID"
 // @Success 200 {object} model.Card "ok"
 // @Failure 400 {string} string "We need ID!!"
@@ -130,6 +134,7 @@ func (su *ServiceCard) DeleteCard(ctx *gin.Context) {
 // @Description get a Card by ID
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Success 200 {object} []model.Card "ok"
 // @Failure 400 {string} string "We need ID!!"
 // @Failure 404 {string} string "Can not find ID"

@@ -1,3 +1,5 @@
+
+
 doc:
 	swag init
 
@@ -14,3 +16,6 @@ clean:
 report:
 	go test -covermode=set -coverprofile=keypass-test.txt ./...
 	go tool cover -html=keypass-test.txt -o index.html
+
+build:
+	docker build -t keypass-api:v0.0.1 .

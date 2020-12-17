@@ -13,3 +13,11 @@ services:
       MYSQL_PASSWORD: pass
     ports:
       - 3306:3306
+    
+  api:
+    image: keypass-api:v0.0.1
+    restart: always
+    ports:
+      - 9090:9090
+    depends_on:
+      - db

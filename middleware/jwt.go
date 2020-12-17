@@ -3,6 +3,7 @@ package middleware
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -30,8 +31,7 @@ func NewJWT(uuid, userName string) (string, error) {
 		UserUUID: uuid,
 		UserName: userName,
 	}
-	// claims.ExpiresAt = time.Now().Add(time.Hour * 2).Unix()
-	claims.ExpiresAt = time.Now().Unix()
+	claims.ExpiresAt = time.Now().Add(time.Hour * 2).Unix()
 	claims.Issuer = "keypass"
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -64,7 +64,9 @@ func NewJWTMiddleware() func(ctx *gin.Context) {
 			ctx.AbortWithError(http.StatusUnauthorized, errors.New("JWT no value"))
 			return
 		}
+		log.Println("token value:", value)
 		valueToken := strings.Split(value, " ")
+
 		if len(valueToken) != 2 {
 			ctx.AbortWithError(http.StatusUnauthorized, errors.New("JWT parsing"))
 			return

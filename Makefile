@@ -5,6 +5,7 @@ doc:
 
 up:
 	make doc
+	docker-compose up -d
 	go build
 	./keypass
 
@@ -19,3 +20,8 @@ report:
 
 build:
 	docker build -t keypass-api:v0.0.1 .
+
+compose:
+	# make build
+	docker-compose up -d
+	go run main.go

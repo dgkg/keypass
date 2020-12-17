@@ -8,6 +8,7 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
+	"github.com/dgkg/keypass/cache/redis"
 	"github.com/dgkg/keypass/db"
 	"github.com/dgkg/keypass/db/mysql"
 	"github.com/dgkg/keypass/db/sqlite"
@@ -16,9 +17,10 @@ import (
 )
 
 type Config struct {
-	MySQL string
 	Mode  string
 	Port  string
+	MySQL string
+	Redis string
 }
 
 var conf Config
@@ -31,8 +33,11 @@ func init() {
 	if err != nil {               // Handle errors reading the config file
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
-	conf.MySQL = viper.GetString("mysql.dsn")
 	conf.Mode = viper.GetString("mode")
+
+	conf.MySQL = viper.GetString(conf.Mode + ".mysql.dsn")
+	conf.Redis = viper.GetString(conf.Mode + ".redis.dsn")
+
 	conf.Port = viper.GetString("port")
 }
 
@@ -69,7 +74,7 @@ func main() {
 		db = mysql.New(conf.MySQL)
 	}
 
-	service.New(r, db)
+	service.New(r, db, redis.New(conf.Redis))
 
 	r.Run(":" + conf.Port)
 }

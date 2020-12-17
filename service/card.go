@@ -5,6 +5,7 @@ import (
 	"net/http"
 	_ "net/url"
 
+	"github.com/dgkg/keypass/cache"
 	"github.com/dgkg/keypass/db"
 	"github.com/dgkg/keypass/model"
 	"github.com/gin-gonic/gin"
@@ -13,7 +14,8 @@ import (
 
 // ServiceCard reprensent all services around card.
 type ServiceCard struct {
-	DB db.DB
+	DB    db.DB
+	Cache cache.CacheDB
 }
 
 // @Description get a Card by ID

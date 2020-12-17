@@ -1,4 +1,10 @@
 mode: "local"
 port: "9091"
-mysql:
-  dsn: "root:example@tcp(127.0.0.1:3306)/keypass?charset=utf8mb4&parseTime=True&loc=Local"
+local:
+  redis:
+    dsn: "localhost:6379"
+prod:
+  mysql:
+    dsn: "root:example@tcp(db:3306)/keypass?charset=utf8mb4&parseTime=True&loc=Local"
+  redis:
+    dsn: "redis:6379"

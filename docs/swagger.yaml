@@ -324,9 +324,4 @@ paths:
           description: Can not find ID
           schema:
             type: string
-securityDefinitions:
-  BearerAuth:
-    in: header
-    name: Authorization
-    type: apiKey
 swagger: "2.0"

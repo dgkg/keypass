@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/dgkg/keypass/cache"
 	"github.com/dgkg/keypass/db"
 	"github.com/dgkg/keypass/middleware"
 	"github.com/dgkg/keypass/model"
@@ -14,7 +15,8 @@ import (
 
 // ServiceUser reprensent all services around user.
 type ServiceUser struct {
-	DB db.DB
+	DB    db.DB
+	Cache cache.CacheDB
 }
 
 // @Description get a User by ID
@@ -174,10 +176,14 @@ func (su *ServiceUser) DeleteUser(ctx *gin.Context) {
 // @Failure 404 {string} string "Can not find ID"
 // @Router /users [get]
 func (su *ServiceUser) GetAllUser(ctx *gin.Context) {
+
 	us, err := su.DB.GetAllUser()
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
 	}
+
+	su.Cache.Set(ctx, ctx.Request.RequestURI, us)
+
 	ctx.JSON(http.StatusOK, us)
 }

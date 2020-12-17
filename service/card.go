@@ -11,6 +11,7 @@ import (
 	"github.com/gofrs/uuid"
 )
 
+// ServiceCard reprensent all services around card.
 type ServiceCard struct {
 	DB db.DB
 }

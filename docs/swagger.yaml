@@ -37,6 +37,13 @@ definitions:
       uuid:
         type: string
     type: object
+  model.UserLogin:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    type: object
 info:
   contact:
     email: support@swagger.io
@@ -165,6 +172,29 @@ paths:
             type: string
         "404":
           description: Can not find ID
+          schema:
+            type: string
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: check if the login pass are correct and gives backe a JWT value
+      parameters:
+      - description: Add a User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
           schema:
             type: string
   /users:

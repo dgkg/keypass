@@ -114,3 +114,28 @@ func NewUser(fn, ln, email, pass string) *User {
 		Password:  pass,
 	}
 }
+
+type UserLogin struct {
+	Login    string `json:"login"`
+	Password string `json:"password"`
+}
+
+func (u *UserLogin) UnmarshalJSON(b []byte) error {
+	aux := struct {
+		Login    string `json:"login"`
+		Password string `json:"password"`
+	}{}
+
+	if err := json.Unmarshal(b, &aux); err != nil {
+		return err
+	}
+
+	u.Login = aux.Login
+	u.Password = Hash(aux.Password)
+
+	return nil
+}
+
+func (u UserLogin) MarshalJSON() ([]byte, error) {
+	return json.Marshal(nil)
+}

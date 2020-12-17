@@ -6,12 +6,12 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
-	"github.com/dgkg/keypass/db"
+	database "github.com/dgkg/keypass/db"
 	"github.com/dgkg/keypass/model"
 	uuid "github.com/satori/go.uuid"
 )
 
-var _ db.DB = &SQLite{}
+var _ database.DB = &SQLite{}
 
 type SQLite struct {
 	db *gorm.DB
@@ -45,6 +45,15 @@ func (db *SQLite) CreateUser(u *model.User) (*model.User, error) {
 func (db *SQLite) GetUser(uuid string) (*model.User, error) {
 	var u model.User
 	db.db.Where("id = ?", uuid).First(&u)
+	return &u, nil
+}
+
+func (db *SQLite) GetUserByEmail(email string) (*model.User, error) {
+	var u model.User
+	db.db.Where("email = ?", email).First(&u)
+	if len(u.ID) == 0 {
+		return nil, database.NewErrNotFound("email"+email, nil)
+	}
 	return &u, nil
 }
 

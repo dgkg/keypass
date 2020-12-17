@@ -3,12 +3,12 @@ package moke
 import (
 	"time"
 
-	"github.com/dgkg/keypass/db"
+	database "github.com/dgkg/keypass/db"
 	"github.com/dgkg/keypass/model"
 	uuid "github.com/satori/go.uuid"
 )
 
-var _ db.DB = &mokeDB{}
+var _ database.DB = &mokeDB{}
 
 type mokeDB struct {
 	users map[string]*model.User
@@ -31,6 +31,16 @@ func (db *mokeDB) GetUser(uuid string) (*model.User, error) {
 
 	return db.users[uuid], nil
 }
+
+func (db *mokeDB) GetUserByEmail(email string) (*model.User, error) {
+	for _, u := range db.users {
+		if u.Email == email {
+			return u, nil
+		}
+	}
+	return nil, database.NewErrNotFound("email"+email, nil)
+}
+
 func (db *mokeDB) DeleteUser(uuid string) (*model.User, error) {
 	u, err := db.GetUser(uuid)
 	if err != nil {

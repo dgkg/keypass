@@ -3,13 +3,16 @@ package service
 import (
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/dgkg/keypass/db"
+	"github.com/dgkg/keypass/middleware"
 	"github.com/dgkg/keypass/model"
 	"github.com/gin-gonic/gin"
 	"github.com/gofrs/uuid"
 )
 
+// ServiceUser reprensent all services around user.
 type ServiceUser struct {
 	DB db.DB
 }
@@ -37,6 +40,44 @@ func (su *ServiceUser) GetUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, nil)
 	}
 	ctx.JSON(http.StatusOK, u)
+}
+
+// @Description check if the login pass are correct and gives backe a JWT value
+// @Accept json
+// @Produce json
+// @Param user body model.UserLogin true "Add a User"
+// @Success 200 {object} string nil
+// @Failure 400 {string} string nil
+// @Router /login [post]
+func (su *ServiceUser) LoginUser(ctx *gin.Context) {
+	var payload model.UserLogin
+	err := ctx.BindJSON(&payload)
+	if err != nil {
+		log.Println("/users bad request", err.Error())
+		ctx.JSON(http.StatusBadRequest, nil)
+		return
+	}
+
+	u2, err := su.DB.GetUserByEmail(payload.Login)
+	if err != nil {
+		log.Println("/users not found", err.Error())
+		ctx.JSON(http.StatusNotFound, nil)
+		return
+	}
+
+	if u2.Password != payload.Password {
+		log.Println("/users not authorized")
+		ctx.JSON(http.StatusUnauthorized, nil)
+		return
+	}
+
+	jwtValue, err := middleware.NewJWT(u2.ID, u2.FirstName+" "+strings.ToUpper(u2.LastName))
+	if err != nil {
+		log.Println("/users not internal server error", err)
+		ctx.JSON(http.StatusInternalServerError, nil)
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"jwt": jwtValue})
 }
 
 // @Description create a User from the payload.

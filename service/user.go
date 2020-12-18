@@ -1,8 +1,6 @@
 package service
 
 import (
-	"context"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -193,10 +191,11 @@ func (su *ServiceUser) GetAllUser(ctx *gin.Context) {
 }
 
 func (su ServiceUser) log(msg ...interface{}) {
-	idmsg, _ := uuid.NewV4()
-	su.Kw.WriteMessages(context.Background(),
-		kafka.Message{
-			Key:   []byte(idmsg.String()),
-			Value: []byte(fmt.Sprint(msg)),
-		})
+
+	// idmsg, _ := uuid.NewV4()
+	// su.Kw.WriteMessages(context.Background(),
+	// 	kafka.Message{
+	// 		Key:   []byte(idmsg.String()),
+	// 		Value: []byte(fmt.Sprint(msg)),
+	// 	})
 }

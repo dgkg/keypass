@@ -1,19 +1,25 @@
-CREATE TABLE `cards` (
-  `id` varchar(36) DEFAULT NULL,
-  `user_id` varchar(36) DEFAULT NULL,
-  `url` text,
-  `user_account_login` varchar(30) DEFAULT NULL,
-  `user_account_password` varchar(30) DEFAULT NULL,
-  `creation_date` datetime DEFAULT NULL,
-  `activated` tinyint(1) DEFAULT NULL,
-  `pic` blob
+CREATE TABLE conteners (
+ id text NULL,
+ user_id text NULL,
+ title text NULL,
+ secret text NULL,
+ creation_date datetime NULL
 );
 
-CREATE TABLE `users` (
-  `id` varchar(36) DEFAULT NULL,
-  `first_name` varchar(100) DEFAULT NULL,
-  `last_name` varchar(100) DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `password` varchar(100) DEFAULT NULL,
-  `creation_date` datetime DEFAULT NULL
+CREATE TABLE users (
+ id text NULL,
+ first_name text NULL,
+ last_name text NULL,
+ email text NULL,
+ password text NULL,
+ creation_date datetime NULL
+);
+
+CREATE TABLE cards (
+ id text NULL,
+ contener_id text NULL,
+ url text,
+ pic blob,
+ activated tinyint(1) NULL,
+ creation_date datetime NULL
 );

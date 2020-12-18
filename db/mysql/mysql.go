@@ -29,19 +29,69 @@ type DBMysql struct {
 }
 
 func New(dsn string) *DBMysql {
-	log.Println("mysql: trys to connect to database")
-	db, err := sqlx.Open("mysql", dsn)
+
+	log.Println("mysql: wait to connect to database")
+	// time.Sleep(time.Second * 60)
+	log.Println("mysql: try to connect to database")
+
+	db, err := sqlx.Connect("mysql", dsn)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	res, err := db.Exec("SELECT VERSION();", nil)
+	log.Println("mysql: select version", res, err)
+
+	res, err = db.Exec("SHOW GRANTS;", nil)
+	log.Println("mysql: show grants", res, err)
+
+	res, err = db.Exec("SELECT 1;", nil)
+	log.Println("mysql: select 1", res, err)
+
 	log.Println("mysql: PING", db.Ping())
-	log.Println(db.MustExec(schema).RowsAffected())
+	// log.Println(db.MustExec(schema).RowsAffected())
+	res, err = db.Exec(schemaConteners, nil)
+	log.Println("mysql: create schema conteners", res, err)
+
+	res, err = db.Exec(schemaCards, nil)
+	log.Println("mysql: create schema cards", res, err)
+
+	res, err = db.Exec(schemaUser, nil)
+	log.Println("mysql: create schema users", res, err)
 
 	return &DBMysql{
 		conn: db,
 	}
 }
+
+var schemaConteners string = `
+CREATE TABLE conteners (
+	id text NULL,
+	user_id text NULL,
+	title text NULL,
+	secret text NULL,
+	creation_date datetime NULL
+ );`
+
+var schemaUser string = `
+ CREATE TABLE users (
+	id text NULL,
+	first_name text NULL,
+	last_name text NULL,
+	email text NULL,
+	password text NULL,
+	creation_date datetime NULL
+ );`
+
+var schemaCards string = `
+ CREATE TABLE cards (
+	id text NULL,
+	contener_id text NULL,
+	url text,
+	pic blob,
+	activated tinyint(1) NULL,
+	creation_date datetime NULL
+ );`
 
 func (db *DBMysql) CreateUser(u *model.User) (*model.User, error) {
 	u.ID = uuid.NewV4().String()
@@ -94,5 +144,25 @@ func (db *DBMysql) UpdateCard(uuid string, payload *model.Payloadpatch) (*model.
 }
 
 func (db *DBMysql) GetAllCard() ([]*model.Card, error) {
+	return nil, nil
+}
+
+func (db *DBMysql) CreateContener(u *model.Contener) (*model.Contener, error) {
+	return nil, nil
+}
+
+func (db *DBMysql) GetContener(uuid string) (*model.Contener, error) {
+	return nil, nil
+}
+
+func (db *DBMysql) DeleteContener(uuid string) error {
+	return nil
+}
+
+func (db *DBMysql) UpdateContener(uuid string, payload *model.Payloadpatch) (*model.Contener, error) {
+	return nil, nil
+}
+
+func (db *DBMysql) GetAllContener() ([]*model.Contener, error) {
 	return nil, nil
 }

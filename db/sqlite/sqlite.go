@@ -102,3 +102,32 @@ func (db *SQLite) GetAllCard() ([]*model.Card, error) {
 	db.db.Find(&cs)
 	return cs, nil
 }
+
+func (db *SQLite) CreateContener(c *model.Contener) (*model.Contener, error) {
+	c.ID = uuid.NewV4().String()
+	c.CreationDate = time.Now()
+	db.db.Create(&c)
+	return c, nil
+}
+
+func (db *SQLite) GetContener(uuid string) (*model.Contener, error) {
+	var c model.Contener
+	db.db.Where("id = ?", uuid).First(&c)
+	return &c, nil
+}
+
+func (db *SQLite) DeleteContener(uuid string) error {
+	var u model.Contener
+	return db.db.Where("id = ?", uuid).Delete(&u).Error
+}
+
+func (db *SQLite) UpdateContener(uuid string, payload *model.Payloadpatch) (*model.Contener, error) {
+	db.db.Model(&model.Contener{}).Where("id = ?", uuid).Updates(payload.Data)
+	return db.GetContener(uuid)
+}
+
+func (db *SQLite) GetAllContener() ([]*model.Contener, error) {
+	var cs []*model.Contener
+	db.db.Find(&cs)
+	return cs, nil
+}

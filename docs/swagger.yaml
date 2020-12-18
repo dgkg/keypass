@@ -5,6 +5,8 @@ definitions:
       activated:
         description: Activated the cart should be activated before usage.
         type: boolean
+      container_uuid:
+        type: string
       creation_date:
         type: string
       pic:
@@ -12,12 +14,22 @@ definitions:
         type: string
       url:
         type: string
-      user_account_login:
+      uuid:
         type: string
-      user_account_password:
+    type: object
+  model.Contener:
+    properties:
+      cards omitempty:
+        items:
+          $ref: '#/definitions/model.Card'
+        type: array
+      creation_date:
+        type: string
+      secret:
+        type: string
+      title:
         type: string
       user_id:
-        description: UserID refer to the User.ID
         type: string
       uuid:
         type: string
@@ -174,6 +186,133 @@ paths:
           description: ok
           schema:
             $ref: '#/definitions/model.Card'
+        "400":
+          description: We need ID!!
+          schema:
+            type: string
+        "404":
+          description: Can not find ID
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+  /conteners:
+    get:
+      consumes:
+      - application/json
+      description: get a Contener by ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            items:
+              $ref: '#/definitions/model.Contener'
+            type: array
+        "400":
+          description: We need ID!!
+          schema:
+            type: string
+        "404":
+          description: Can not find ID
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+    patch:
+      consumes:
+      - application/json
+      description: update a Contener from the payload.
+      parameters:
+      - description: Add a Contener
+        in: body
+        name: Contener
+        required: true
+        schema:
+          $ref: '#/definitions/model.Contener'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Contener'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+    post:
+      consumes:
+      - application/json
+      description: create a Contener from the payload.
+      parameters:
+      - description: Add a Contener
+        in: body
+        name: Contener
+        required: true
+        schema:
+          $ref: '#/definitions/model.Contener'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Contener'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+  /conteners/{uuid}:
+    delete:
+      consumes:
+      - application/json
+      description: delete a Contener by ID
+      parameters:
+      - description: Some ID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/model.Contener'
+        "400":
+          description: We need ID!!
+          schema:
+            type: string
+        "404":
+          description: Can not find ID
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+    get:
+      consumes:
+      - application/json
+      description: get a Contener by ID
+      parameters:
+      - description: Some ID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/model.Contener'
         "400":
           description: We need ID!!
           schema:

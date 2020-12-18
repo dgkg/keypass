@@ -13,8 +13,6 @@ import (
 	"github.com/dgkg/keypass/db/mysql"
 	"github.com/dgkg/keypass/db/sqlite"
 	_ "github.com/dgkg/keypass/docs"
-	"github.com/dgkg/keypass/elastic"
-	"github.com/dgkg/keypass/queue"
 	"github.com/dgkg/keypass/service"
 )
 
@@ -85,12 +83,14 @@ func main() {
 	}
 
 	// create the queue.
-	queueWriter, funcReader := queue.New(conf.Kafka)
-	service.New(r, db, redis.New(conf.Redis), queueWriter)
+	// queueWriter, funcReader := queue.New(conf.Kafka)
+	// service.New(r, db, redis.New(conf.Redis), queueWriter)
+	service.New(r, db, redis.New(conf.Redis), nil)
 
-	redisDefaultClient := redis.NewDefault(conf.Redis)
-	elasticDefaultClient := elastic.New()
-	service.NewLog(redisDefaultClient, elasticDefaultClient, funcReader)
+	// redisDefaultClient := redis.NewDefault(conf.Redis)
+	// elasticDefaultClient := elastic.New()
+	// service.NewLog(redisDefaultClient, elasticDefaultClient, funcReader)
+	service.NewLog(nil, nil, nil)
 
 	r.Run(":" + conf.Port)
 }

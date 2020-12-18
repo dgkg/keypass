@@ -34,4 +34,16 @@ func New(r *gin.Engine, db db.DB, cache cache.CacheDB, kw *kafka.Writer) {
 	card.POST("", sc.CreateCard)
 	card.DELETE("/:uuid", sc.DeleteCard)
 
+	var ser ServiceContener
+	ser.DB = db
+	ser.Cache = cache
+	ser.Kw = kw
+	contener := v1.Group("/conteners").Use(middleware.NewJWTMiddleware())
+	contener.GET("/:uuid", ser.GetContener)
+	contener.GET("", ser.GetAllContener)
+	contener.PATCH("/:uuid", ser.UpdateContener)
+	contener.PUT("/:uuid", ser.UpdateContener)
+	contener.POST("", ser.CreateContener)
+	contener.DELETE("/:uuid", ser.DeleteContener)
+
 }

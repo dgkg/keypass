@@ -11,35 +11,36 @@ import (
 
 	"github.com/dgkg/keypass/cache"
 	"github.com/dgkg/keypass/db"
+	"github.com/dgkg/keypass/middleware"
 	"github.com/dgkg/keypass/model"
 )
 
-// ServiceCard reprensent all services around card.
-type ServiceCard struct {
+// ServiceContener reprensent all services around Contener.
+type ServiceContener struct {
 	DB    db.DB
 	Cache cache.CacheDB
 	Kw    *kafka.Writer
 }
 
-// @Description get a Card by ID
+// @Description get a Contener by ID
 // @Accept json
 // @Produce json
 // @Security BearerAuth
 // @Param uuid path string true "Some ID"
-// @Success 200 {object} model.Card "ok"
+// @Success 200 {object} model.Contener "ok"
 // @Failure 400 {string} string "We need ID!!"
 // @Failure 404 {string} string "Can not find ID"
-// @Router /cards/{uuid} [get]
-func (su *ServiceCard) GetCard(ctx *gin.Context) {
+// @Router /conteners/{uuid} [get]
+func (su *ServiceContener) GetContener(ctx *gin.Context) {
 
 	id, err := uuid.FromString(ctx.Param("uuid"))
 	if err != nil {
-		log.Println("/cards bad request", err.Error())
+		log.Println("/conteners bad request", err.Error())
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
 	}
 
-	u, err := su.DB.GetCard(id.String())
+	u, err := su.DB.GetContener(id.String())
 	if err != nil {
 		log.Println(err)
 		ctx.JSON(http.StatusNotFound, nil)
@@ -47,48 +48,55 @@ func (su *ServiceCard) GetCard(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, u)
 }
 
-// @Description create a Card from the payload.
+// @Description create a Contener from the payload.
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param Card body model.Card true "Add a Card"
-// @Success 200 {object} model.Card
+// @Param Contener body model.Contener true "Add a Contener"
+// @Success 200 {object} model.Contener
 // @Failure 400 {string} string nil
-// @Router /cards [post]
-func (su *ServiceCard) CreateCard(ctx *gin.Context) {
+// @Router /conteners [post]
+func (su *ServiceContener) CreateContener(ctx *gin.Context) {
 
-	var u model.Card
+	var u model.Contener
 	err := ctx.BindJSON(&u)
 	if err != nil {
-		log.Println("/cards bad request", err.Error())
+		log.Println("/conteners bad request", err.Error())
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
 	}
 
+	cession, ok := ctx.Get("cession")
+	if !ok {
+		return
+	}
+	t := cession.(*middleware.JWTClaims)
+	u.UserID = t.UserUUID
+
 	errs := u.ValidatePayload()
 	if len(errs) != 0 {
-		log.Println("/cards bad request", errs)
+		log.Println("/conteners bad request", errs)
 		ctx.JSON(http.StatusBadRequest, errs)
 		return
 	}
 
-	u2, _ := su.DB.CreateCard(&u)
+	u2, _ := su.DB.CreateContener(&u)
 
 	ctx.JSON(http.StatusOK, u2)
 }
 
-// @Description update a Card from the payload.
+// @Description update a Contener from the payload.
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Param Card body model.Card true "Add a Card"
-// @Success 200 {object} model.Card
+// @Param Contener body model.Contener true "Add a Contener"
+// @Success 200 {object} model.Contener
 // @Failure 400 {string} string nil
-// @Router /cards [patch] [put]
-func (su *ServiceCard) UpdateCard(ctx *gin.Context) {
+// @Router /conteners [patch] [put]
+func (su *ServiceContener) UpdateContener(ctx *gin.Context) {
 	id, err := uuid.FromString(ctx.Param("uuid"))
 	if err != nil {
-		log.Println("/cards bad request", err.Error())
+		log.Println("/conteners bad request", err.Error())
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
 	}
@@ -96,12 +104,12 @@ func (su *ServiceCard) UpdateCard(ctx *gin.Context) {
 	payload.Data = make(map[string]interface{})
 	err = ctx.BindJSON(&payload.Data)
 	if err != nil {
-		log.Println("/cards bad request", err.Error())
+		log.Println("/conteners bad request", err.Error())
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
 	}
 
-	u, err := su.DB.UpdateCard(id.String(), &payload)
+	u, err := su.DB.UpdateContener(id.String(), &payload)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
@@ -110,26 +118,26 @@ func (su *ServiceCard) UpdateCard(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, u)
 }
 
-// DeleteCard is deleing a Card form it's uuid.
-// @Description delete a Card by ID
+// DeleteContener is deleing a Contener form it's uuid.
+// @Description delete a Contener by ID
 // @Accept json
 // @Produce json
 // @Security BearerAuth
 // @Param uuid path string true "Some ID"
-// @Success 200 {object} model.Card "ok"
+// @Success 200 {object} model.Contener "ok"
 // @Failure 400 {string} string "We need ID!!"
 // @Failure 404 {string} string "Can not find ID"
-// @Router /cards/{uuid} [delete]
-func (su *ServiceCard) DeleteCard(ctx *gin.Context) {
+// @Router /conteners/{uuid} [delete]
+func (su *ServiceContener) DeleteContener(ctx *gin.Context) {
 
 	id, err := uuid.FromString(ctx.Param("uuid"))
 	if err != nil {
-		log.Println("/cards bad request", err.Error())
+		log.Println("/conteners bad request", err.Error())
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
 	}
 
-	err = su.DB.DeleteCard(id.String())
+	err = su.DB.DeleteContener(id.String())
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
@@ -137,16 +145,16 @@ func (su *ServiceCard) DeleteCard(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, nil)
 }
 
-// @Description get a Card by ID
+// @Description get a Contener by ID
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Success 200 {object} []model.Card "ok"
+// @Success 200 {object} []model.Contener "ok"
 // @Failure 400 {string} string "We need ID!!"
 // @Failure 404 {string} string "Can not find ID"
-// @Router /cards [get]
-func (su *ServiceCard) GetAllCard(ctx *gin.Context) {
-	us, err := su.DB.GetAllCard()
+// @Router /conteners [get]
+func (su *ServiceContener) GetAllContener(ctx *gin.Context) {
+	us, err := su.DB.GetAllContener()
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, nil)
 		return

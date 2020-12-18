@@ -27,14 +27,15 @@ type ServiceLog struct {
 
 func NewLog(cache *redis.Client, elastic *elasticsearch.Client, reader func(string, string) *kafka.Reader) *ServiceLog {
 
-	ss := &ServiceLog{
-		kafkaReader: reader,
-		cache:       cache,
-		elastic:     elastic,
-	}
-	go ss.sendMessageToRedis()
-	go ss.sendMessageToElastic()
-	return ss
+	// ss := &ServiceLog{
+	// 	kafkaReader: reader,
+	// 	cache:       cache,
+	// 	elastic:     elastic,
+	// }
+	// go ss.sendMessageToRedis()
+	// go ss.sendMessageToElastic()
+	// return ss
+	return nil
 }
 
 func (ss *ServiceLog) StatLogin(ctx *gin.Context) {

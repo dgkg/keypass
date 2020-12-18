@@ -71,10 +71,11 @@ func NewJWTMiddleware() func(ctx *gin.Context) {
 			ctx.AbortWithError(http.StatusUnauthorized, errors.New("JWT parsing"))
 			return
 		}
-		_, err := ValidateJWT(valueToken[1])
+		jwtValue, err := ValidateJWT(valueToken[1])
 		if err != nil {
 			ctx.AbortWithError(http.StatusUnauthorized, err)
 			return
 		}
+		ctx.Set("cession", jwtValue)
 	}
 }

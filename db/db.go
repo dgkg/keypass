@@ -7,6 +7,7 @@ import (
 type DB interface {
 	DBUser
 	DBCard
+	DBContener
 }
 
 type DBUser interface {
@@ -24,4 +25,12 @@ type DBCard interface {
 	DeleteCard(uuid string) error
 	UpdateCard(uuid string, payload *model.Payloadpatch) (*model.Card, error)
 	GetAllCard() ([]*model.Card, error)
+}
+
+type DBContener interface {
+	CreateContener(u *model.Contener) (*model.Contener, error)
+	GetContener(uuid string) (*model.Contener, error)
+	DeleteContener(uuid string) error
+	UpdateContener(uuid string, payload *model.Payloadpatch) (*model.Contener, error)
+	GetAllContener() ([]*model.Contener, error)
 }

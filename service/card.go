@@ -128,12 +128,12 @@ func (su *ServiceCard) DeleteCard(ctx *gin.Context) {
 		return
 	}
 
-	u, err := su.DB.DeleteCard(id.String())
+	err = su.DB.DeleteCard(id.String())
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
 	}
-	ctx.JSON(http.StatusOK, u)
+	ctx.JSON(http.StatusOK, nil)
 }
 
 // @Description get a Card by ID

@@ -2,33 +2,38 @@ version: '3.1'
 
 services:
 
-  # db:
-  #   image: mysql
-  #   command: --default-authentication-plugin=mysql_native_password
-  #   restart: always
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: example
-  #     MYSQL_DATABASE: keypass
-  #     MYSQL_USER: keypassdb
-  #     MYSQL_PASSWORD: pass
-  #   ports:
-  #     - 3306:3306
-  
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: keypass
+      MYSQL_USER: keypassdb
+      MYSQL_PASSWORD: pass
+    ports:
+      - 3306:3306
+      
   redis:
     image: redis:6.0.9-alpine
     ports:
       - 6379:6379
     
-  # api:
-  #   image: keypass-api:v0.0.1
-  #   restart: always
-  #   ports:
-  #     - 9091:9091
-  #   depends_on:
-  #     - db
-  #     - redis
+  api:
+    image: keypass-api:v0.0.1
+    restart: always
+    ports:
+      - 9091:9091
+    depends_on:
+      - db
+      - redis
+      - elastic
+      - zookeeper
+      - kafka-broker
+      - control-center
+      - kafka-create-topics
 
-  apiyoutube-elastic:
+  elastic:
     image: elasticsearch:7.9.1
     ports:
       - "127.0.0.1:9200:9200"

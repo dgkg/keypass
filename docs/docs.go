@@ -463,10 +463,7 @@ var doc = `{
                     "description": "Activated the cart should be activated before usage.",
                     "type": "boolean"
                 },
-                "creationDate": {
-                    "type": "string"
-                },
-                "id": {
+                "creation_date": {
                     "type": "string"
                 },
                 "pic": {
@@ -476,14 +473,17 @@ var doc = `{
                 "url": {
                     "type": "string"
                 },
-                "userAccountLogin": {
+                "user_account_login": {
                     "type": "string"
                 },
-                "userAccountPassword": {
+                "user_account_password": {
                     "type": "string"
                 },
-                "userID": {
+                "user_id": {
                     "description": "UserID refer to the User.ID",
+                    "type": "string"
+                },
+                "uuid": {
                     "type": "string"
                 }
             }

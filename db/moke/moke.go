@@ -41,13 +41,9 @@ func (db *mokeDB) GetUserByEmail(email string) (*model.User, error) {
 	return nil, database.NewErrNotFound("email"+email, nil)
 }
 
-func (db *mokeDB) DeleteUser(uuid string) (*model.User, error) {
-	u, err := db.GetUser(uuid)
-	if err != nil {
-		return nil, err
-	}
+func (db *mokeDB) DeleteUser(uuid string) error {
 	delete(db.users, uuid)
-	return u, nil
+	return nil
 }
 func (db *mokeDB) UpdateUser(uuid string, payload *model.Payloadpatch) (*model.User, error) {
 	u, err := db.GetUser(uuid)
@@ -80,13 +76,9 @@ func (db *mokeDB) GetCard(uuid string) (*model.Card, error) {
 	return db.cards[uuid], nil
 }
 
-func (db *mokeDB) DeleteCard(uuid string) (*model.Card, error) {
-	u, err := db.GetCard(uuid)
-	if err != nil {
-		return nil, err
-	}
+func (db *mokeDB) DeleteCard(uuid string) error {
 	delete(db.cards, uuid)
-	return u, nil
+	return nil
 }
 
 func (db *mokeDB) UpdateCard(uuid string, payload *model.Payloadpatch) (*model.Card, error) {

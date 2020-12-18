@@ -163,12 +163,12 @@ func (su *ServiceUser) DeleteUser(ctx *gin.Context) {
 		return
 	}
 
-	u, err := su.DB.DeleteUser(id.String())
+	err = su.DB.DeleteUser(id.String())
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
 	}
-	ctx.JSON(http.StatusOK, u)
+	ctx.JSON(http.StatusOK, nil)
 }
 
 // @Description get a User by ID

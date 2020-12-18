@@ -57,10 +57,9 @@ func (db *SQLite) GetUserByEmail(email string) (*model.User, error) {
 	return &u, nil
 }
 
-func (db *SQLite) DeleteUser(uuid string) (*model.User, error) {
+func (db *SQLite) DeleteUser(uuid string) error {
 	var u model.User
-	db.db.Where("id = ?", uuid).Delete(&u)
-	return &u, nil
+	return db.db.Where("id = ?", uuid).Delete(&u).Error
 }
 
 func (db *SQLite) UpdateUser(uuid string, payload *model.Payloadpatch) (*model.User, error) {
@@ -88,10 +87,9 @@ func (db *SQLite) GetCard(uuid string) (*model.Card, error) {
 	return &c, nil
 }
 
-func (db *SQLite) DeleteCard(uuid string) (*model.Card, error) {
+func (db *SQLite) DeleteCard(uuid string) error {
 	var u model.Card
-	db.db.Where("id = ?", uuid).Delete(&u)
-	return &u, nil
+	return db.db.Where("id = ?", uuid).Delete(&u).Error
 }
 
 func (db *SQLite) UpdateCard(uuid string, payload *model.Payloadpatch) (*model.Card, error) {

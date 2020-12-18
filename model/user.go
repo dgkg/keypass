@@ -11,12 +11,12 @@ import (
 
 // User represent a single customer used for JSON comm.
 type User struct {
-	ID           string    `json:"uuid"`
-	FirstName    string    `json:"first_name"`
-	LastName     string    `json:"last_name"`
-	Email        string    `json:"email"`
-	Password     string    `json:"password"`
-	CreationDate time.Time `json:"creation_date"`
+	ID           string    `json:"uuid" db:"id"`
+	FirstName    string    `json:"first_name" db:"first_name"`
+	LastName     string    `json:"last_name" db:"last_name"`
+	Email        string    `json:"email" db:"email"`
+	Password     string    `json:"password" db:"password"`
+	CreationDate time.Time `json:"creation_date" db:"creation_date"`
 }
 
 func (u *User) ValidatePayload() []error {

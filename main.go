@@ -18,6 +18,11 @@ import (
 	"github.com/dgkg/keypass/service"
 )
 
+const (
+	EnvLocal = "local"
+	EnvProd  = "prod"
+)
+
 type Config struct {
 	Mode  string
 	Port  string
@@ -38,7 +43,9 @@ func init() {
 	}
 	conf.Mode = viper.GetString("mode")
 
-	conf.MySQL = viper.GetString(conf.Mode + ".mysql.dsn")
+	if conf.Mode != EnvLocal {
+		conf.MySQL = viper.GetString(conf.Mode + ".mysql.dsn")
+	}
 	conf.Redis = viper.GetString(conf.Mode + ".redis.dsn")
 	conf.Kafka = viper.GetString(conf.Mode + ".kafka.dsn")
 	conf.Port = viper.GetString("port")
@@ -71,7 +78,7 @@ func main() {
 	fmt.Println("run app in mode:", conf.Mode)
 
 	var db db.DB
-	if conf.Mode == "local" {
+	if conf.Mode == EnvLocal {
 		db = sqlite.New("local.db")
 	} else {
 		db = mysql.New(conf.MySQL)

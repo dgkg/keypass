@@ -3,7 +3,7 @@ WORKDIR ./src
 RUN pwd
 COPY . .
 RUN echo "download modules"
-RUN go mod download
+#RUN go mod download
 RUN echo "build binary"
 RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -o api_keypass .
 RUN pwd
@@ -13,6 +13,7 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 COPY --from=builder ./go/src/api_keypass .
 COPY --from=builder ./go/src/config.yaml .
+COPY --from=builder ./go/src/schema.sql .
 ENV GLIBC_VERSION 2.32-r0
 # Download and install glibc
 RUN apk add --update curl && \

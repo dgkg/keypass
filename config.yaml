@@ -1,4 +1,4 @@
-mode: "local"
+mode: "prod"
 port: "9091"
 local:
   redis:

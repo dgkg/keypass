@@ -35,18 +35,21 @@ func (u *User) ValidatePayload() []error {
 	if err != nil {
 		errList = append(errList, err)
 	}
+
 	if !strings.Contains(u.Email, "@") {
 		errList = append(errList, errors.New("no @ found for the email"))
+	} else {
+		emailVals := strings.Split(u.Email, "@")
+		if len(emailVals) != 2 {
+			errList = append(errList, errors.New("email not valid"))
+		} else {
+			err = validateSize(1, 64, emailVals[1])
+			if err != nil {
+				errList = append(errList, err)
+			}
+		}
 	}
 
-	emailVals := strings.Split(u.Email, "@")
-	if len(emailVals) != 2 {
-		errList = append(errList, errors.New("email not valid"))
-	}
-	err = validateSize(1, 64, emailVals[1])
-	if err != nil {
-		errList = append(errList, err)
-	}
 	validateSize(3, 200, u.Password)
 	if err != nil {
 		errList = append(errList, err)

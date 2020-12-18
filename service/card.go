@@ -5,17 +5,20 @@ import (
 	"net/http"
 	_ "net/url"
 
+	"github.com/gin-gonic/gin"
+	"github.com/gofrs/uuid"
+	"github.com/segmentio/kafka-go"
+
 	"github.com/dgkg/keypass/cache"
 	"github.com/dgkg/keypass/db"
 	"github.com/dgkg/keypass/model"
-	"github.com/gin-gonic/gin"
-	"github.com/gofrs/uuid"
 )
 
 // ServiceCard reprensent all services around card.
 type ServiceCard struct {
 	DB    db.DB
 	Cache cache.CacheDB
+	Kw    *kafka.Writer
 }
 
 // @Description get a Card by ID

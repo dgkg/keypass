@@ -5,10 +5,14 @@ go 1.15
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/elastic/go-elasticsearch/v8 v8.0.0-20201216152027-57cb70149147
 	github.com/gin-gonic/gin v1.6.3
+	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/go-redis/redis/v8 v8.4.4
 	github.com/gofrs/uuid v3.3.0+incompatible
+	github.com/google/uuid v1.1.2
 	github.com/satori/go.uuid v1.2.0
+	github.com/segmentio/kafka-go v0.4.8
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.6.1
 	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14

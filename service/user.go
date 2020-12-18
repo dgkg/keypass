@@ -1,7 +1,8 @@
 package service
 
 import (
-	"log"
+	"context"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -11,12 +12,14 @@ import (
 	"github.com/dgkg/keypass/model"
 	"github.com/gin-gonic/gin"
 	"github.com/gofrs/uuid"
+	"github.com/segmentio/kafka-go"
 )
 
 // ServiceUser reprensent all services around user.
 type ServiceUser struct {
 	DB    db.DB
 	Cache cache.CacheDB
+	Kw    *kafka.Writer
 }
 
 // @Description get a User by ID
@@ -31,14 +34,14 @@ func (su *ServiceUser) GetUser(ctx *gin.Context) {
 
 	id, err := uuid.FromString(ctx.Param("uuid"))
 	if err != nil {
-		log.Println("/users bad request", err.Error())
+		su.log("/users bad request", err.Error())
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
 	}
 
 	u, err := su.DB.GetUser(id.String())
 	if err != nil {
-		log.Println(err)
+		su.log(err)
 		ctx.JSON(http.StatusNotFound, nil)
 	}
 	ctx.JSON(http.StatusOK, u)
@@ -55,27 +58,27 @@ func (su *ServiceUser) LoginUser(ctx *gin.Context) {
 	var payload model.UserLogin
 	err := ctx.BindJSON(&payload)
 	if err != nil {
-		log.Println("/users bad request", err.Error())
+		su.log("/users bad request", err.Error())
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
 	}
 
 	u2, err := su.DB.GetUserByEmail(payload.Login)
 	if err != nil {
-		log.Println("/users not found", err.Error())
+		su.log("/users not found", err.Error())
 		ctx.JSON(http.StatusNotFound, nil)
 		return
 	}
 
 	if u2.Password != payload.Password {
-		log.Println("/users not authorized")
+		su.log("/users not authorized")
 		ctx.JSON(http.StatusUnauthorized, nil)
 		return
 	}
 
 	jwtValue, err := middleware.NewJWT(u2.ID, u2.FirstName+" "+strings.ToUpper(u2.LastName))
 	if err != nil {
-		log.Println("/users not internal server error", err)
+		su.log("/users not internal server error", err)
 		ctx.JSON(http.StatusInternalServerError, nil)
 		return
 	}
@@ -93,14 +96,14 @@ func (su *ServiceUser) CreateUser(ctx *gin.Context) {
 	var u model.User
 	err := ctx.BindJSON(&u)
 	if err != nil {
-		log.Println("/users bad request", err.Error())
+		su.log("/users bad request", err.Error())
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
 	}
 
 	errs := u.ValidatePayload()
 	if len(errs) != 0 {
-		log.Println("/users bad request", errs)
+		su.log("/users bad request", errs)
 		ctx.JSON(http.StatusBadRequest, errs)
 		return
 	}
@@ -120,7 +123,7 @@ func (su *ServiceUser) CreateUser(ctx *gin.Context) {
 func (su *ServiceUser) UpdateUser(ctx *gin.Context) {
 	id, err := uuid.FromString(ctx.Param("uuid"))
 	if err != nil {
-		log.Println("/users bad request", err.Error())
+		su.log("/users bad request", err.Error())
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
 	}
@@ -128,7 +131,7 @@ func (su *ServiceUser) UpdateUser(ctx *gin.Context) {
 	payload.Data = make(map[string]interface{})
 	err = ctx.BindJSON(&payload.Data)
 	if err != nil {
-		log.Println("/users bad request", err.Error())
+		su.log("/users bad request", err.Error())
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
 	}
@@ -155,7 +158,7 @@ func (su *ServiceUser) DeleteUser(ctx *gin.Context) {
 
 	id, err := uuid.FromString(ctx.Param("uuid"))
 	if err != nil {
-		log.Println("/users bad request", err.Error())
+		su.log("/users bad request", err.Error())
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
 	}
@@ -179,6 +182,7 @@ func (su *ServiceUser) GetAllUser(ctx *gin.Context) {
 
 	us, err := su.DB.GetAllUser()
 	if err != nil {
+		su.log("/users handler", err.Error())
 		ctx.JSON(http.StatusBadRequest, nil)
 		return
 	}
@@ -186,4 +190,13 @@ func (su *ServiceUser) GetAllUser(ctx *gin.Context) {
 	su.Cache.Set(ctx, ctx.Request.RequestURI, us)
 
 	ctx.JSON(http.StatusOK, us)
+}
+
+func (su ServiceUser) log(msg ...interface{}) {
+	idmsg, _ := uuid.NewV4()
+	su.Kw.WriteMessages(context.Background(),
+		kafka.Message{
+			Key:   []byte(idmsg.String()),
+			Value: []byte(fmt.Sprint(msg)),
+		})
 }

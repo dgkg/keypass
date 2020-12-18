@@ -13,6 +13,8 @@ import (
 	"github.com/dgkg/keypass/db/mysql"
 	"github.com/dgkg/keypass/db/sqlite"
 	_ "github.com/dgkg/keypass/docs"
+	"github.com/dgkg/keypass/elastic"
+	"github.com/dgkg/keypass/queue"
 	"github.com/dgkg/keypass/service"
 )
 
@@ -21,6 +23,7 @@ type Config struct {
 	Port  string
 	MySQL string
 	Redis string
+	Kafka string
 }
 
 var conf Config
@@ -37,7 +40,7 @@ func init() {
 
 	conf.MySQL = viper.GetString(conf.Mode + ".mysql.dsn")
 	conf.Redis = viper.GetString(conf.Mode + ".redis.dsn")
-
+	conf.Kafka = viper.GetString(conf.Mode + ".kafka.dsn")
 	conf.Port = viper.GetString("port")
 }
 
@@ -74,7 +77,13 @@ func main() {
 		db = mysql.New(conf.MySQL)
 	}
 
-	service.New(r, db, redis.New(conf.Redis))
+	// create the queue.
+	queueWriter, funcReader := queue.New(conf.Kafka)
+	service.New(r, db, redis.New(conf.Redis), queueWriter)
+
+	redisDefaultClient := redis.NewDefault(conf.Redis)
+	elasticDefaultClient := elastic.New()
+	service.NewLog(redisDefaultClient, elasticDefaultClient, funcReader)
 
 	r.Run(":" + conf.Port)
 }

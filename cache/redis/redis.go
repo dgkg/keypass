@@ -40,6 +40,18 @@ func New(dns string) *RedisDB {
 	}
 }
 
+func NewDefault(dns string) *redis.Client {
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     dns,
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+
+	pong := rdb.Ping(context.Background())
+	fmt.Println(pong)
+	return rdb
+}
+
 func (cache *RedisDB) Set(ctx context.Context, key string, value interface{}) error {
 	data, err := json.Marshal(value)
 	if err != nil {
